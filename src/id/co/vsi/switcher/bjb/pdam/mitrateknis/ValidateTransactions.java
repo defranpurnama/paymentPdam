@@ -1,4 +1,4 @@
-package id.co.vsi.switcher.bjb.edupay;
+package id.co.vsi.switcher.bjb.pdam.mitrateknis;
 
 import static id.co.vsi.common.bp.ibank.BJBJsonHandler.cLoadedKey;
 import static id.co.vsi.common.bp.ibank.BJBJsonHandler.cQueryTimeOutKey;
@@ -10,7 +10,7 @@ import id.co.vsi.common.database.DBFieldEntry;
 import id.co.vsi.common.log.LogType;
 import id.co.vsi.common.log.SystemLog;
 import id.co.vsi.common.settings.SystemConfig;
-import static id.co.vsi.switcher.bjb.edupay.Common.cModuleNameSpace;
+import static id.co.vsi.switcher.bjb.pdam.mitrateknis.Common.cModuleNameSpace;
 import id.co.vsi.systemcore.isocore.SystemException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;

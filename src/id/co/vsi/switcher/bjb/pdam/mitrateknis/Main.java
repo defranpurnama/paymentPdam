@@ -1,4 +1,4 @@
-package id.co.vsi.switcher.bjb.edupay;
+package id.co.vsi.switcher.bjb.pdam.mitrateknis;
 
 import id.co.vsi.common.etc.VersionChecker;
 
