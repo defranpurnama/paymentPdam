@@ -146,7 +146,7 @@ public class Common {
         tTableRecordDataHashMap.put("EBM_LT_ACCOUNT", "'" + pRequestMessage.getValueForDataElement(102) + "'");
         tTableRecordDataHashMap.put("EBM_LT_PC", "'" + pRequestMessage.getValueForDataElement(3) + "'");
         tTableRecordDataHashMap.put("EBM_LT_REFNUM", "'" + pRF + "'");
-        tTableRecordDataHashMap.put("EBM_LT_BILL_ID", "'" + pRequestMessage.getValueForDataElement(61) + "'");
+        tTableRecordDataHashMap.put("EBM_LT_BILL_ID", "'" + pRequestMessage.getValueForDataElement(61).trim() + "'");
         tTableRecordDataHashMap.put("EBM_LT_CMD", "'" + pRequestMessage.getValueForDataElement(0) + "'");
         tTableRecordDataHashMap.put("EBM_LT_LOGGED_DT", tLoggedTime);
         tTableRecordDataHashMap.put("EBM_LT_RC", tRC);
