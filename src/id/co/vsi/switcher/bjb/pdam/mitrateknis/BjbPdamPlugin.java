@@ -88,7 +88,7 @@ public class BjbPdamPlugin extends JSONPlugin {
 
     @Override
     public String getModuleDescription() {
-        return "bjb payment pdam mitrateknis 4.0.0";
+        return "bjb payment pdam mitrateknis 4.1.0";
     }
 
     @Override

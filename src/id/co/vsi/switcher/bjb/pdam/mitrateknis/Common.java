@@ -17,6 +17,8 @@ import id.co.vsi.common.database.DBFieldType;
 import id.co.vsi.common.log.LogType;
 import id.co.vsi.common.log.SystemLog;
 import id.co.vsi.common.settings.SystemConfig;
+import static id.co.vsi.switcher.bjb.pdam.mitrateknis.BjbPdamMessageHandler.cProcCodeInquiry;
+import static id.co.vsi.switcher.bjb.pdam.mitrateknis.BjbPdamMessageHandler.cProcCodePayment;
 import id.co.vsi.systemcore.isocore.SystemException;
 import java.math.BigInteger;
 import java.sql.ResultSet;
@@ -135,7 +137,7 @@ public class Common {
         }
     }
 
-    public static void logToTransferTranTable(final ISO8583Message pRequestMessage, final String pRF, final String pStan) {
+    public static void logToTransferTranTable(final ISO8583Message pRequestMessage, final String pRF, final String pStan, final String pProcessingCode) {
         final String tTableName = "EBANKMOD_PAM_LOG_TRAN";
         final HashMap<String, String> tTableRecordDataHashMap = new HashMap<>();
         final String tLoggedTime = "'" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + "'";
@@ -146,7 +148,23 @@ public class Common {
         tTableRecordDataHashMap.put("EBM_LT_ACCOUNT", "'" + pRequestMessage.getValueForDataElement(102) + "'");
         tTableRecordDataHashMap.put("EBM_LT_PC", "'" + pRequestMessage.getValueForDataElement(3) + "'");
         tTableRecordDataHashMap.put("EBM_LT_REFNUM", "'" + pRF + "'");
-        tTableRecordDataHashMap.put("EBM_LT_BILL_ID", "'" + pRequestMessage.getValueForDataElement(61).trim() + "'");
+
+        if (pProcessingCode.equals(cProcCodeInquiry)) {
+            if (pRequestMessage.getValueForDataElement(61).length() > 18) {
+                tTableRecordDataHashMap.put("EBM_LT_BILL_ID", "'" + pRequestMessage.getValueForDataElement(61).substring(2, 20).trim() + "'");
+            } else {
+                tTableRecordDataHashMap.put("EBM_LT_BILL_ID", "'" + pRequestMessage.getValueForDataElement(61).trim() + "'");
+            }
+        }
+
+        if (pProcessingCode.equals(cProcCodePayment)) {
+            if (pRequestMessage.getValueForDataElement(61).length() > 18) {
+                tTableRecordDataHashMap.put("EBM_LT_BILL_ID", "'" + pRequestMessage.getValueForDataElement(61).substring(0, 18).trim() + "'");
+            } else {
+                tTableRecordDataHashMap.put("EBM_LT_BILL_ID", "'" + pRequestMessage.getValueForDataElement(61).trim() + "'");
+            }
+        }
+
         tTableRecordDataHashMap.put("EBM_LT_CMD", "'" + pRequestMessage.getValueForDataElement(0) + "'");
         tTableRecordDataHashMap.put("EBM_LT_LOGGED_DT", tLoggedTime);
         tTableRecordDataHashMap.put("EBM_LT_RC", tRC);

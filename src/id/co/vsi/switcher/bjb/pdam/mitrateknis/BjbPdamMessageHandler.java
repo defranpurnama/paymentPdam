@@ -48,7 +48,7 @@ public abstract class BjbPdamMessageHandler extends BJBJsonHandler {
         final Map<String, String> tChannelData = getChannelData(cModuleNameSpace, cLoadedKey, pRequestMessage.getString(cChannelCodeKey));
         final String tMailSubject = tChannelData.get("EBC_C_LABEL") + " — " + SystemConfig.getNameSpace(cModuleNameSpace).getStringParameter(cFeatureName, "Internet Banking");
 
-        Common.logToTransferTranTable(tRequestInquiryPayment, pRF, tStan);
+        Common.logToTransferTranTable(tRequestInquiryPayment, pRF, tStan, pProcessingCode);
 
         final ISO8583Message tResponseInquiryPayment;
         final boolean isSimulateISO = SystemConfig.getNameSpace(cModuleNameSpace).getBooleanParameter("simulate-iso", false);
@@ -58,7 +58,7 @@ public abstract class BjbPdamMessageHandler extends BJBJsonHandler {
             tResponseInquiryPayment = new BPConUtil().sendISOMessage(SystemConfig.getNameSpace(Common.cModuleNameSpace), tRequestInquiryPayment);
         }
 
-        Common.logToTransferTranTable(tResponseInquiryPayment, pRF, tStan);
+        Common.logToTransferTranTable(tResponseInquiryPayment, pRF, tStan, pProcessingCode);
 
         final String tResponseMT = convertResponseMessage(tResponseMessage.getString(cMTIKey));
 
@@ -91,7 +91,18 @@ public abstract class BjbPdamMessageHandler extends BJBJsonHandler {
                 tJsonPrivateData.put("FOOTER", tJsonPrivateData.getString("FOOTER").trim());
                 tJsonPrivateData.put("PERIODE_TAGIHAN", tJsonPrivateData.getString("PERIODE_TAGIHAN").trim());
 
-                BigInteger admin = new BigInteger(tJsonPrivateData.getString("BIAYA_ADMIN"));
+//                BigInteger admin = new BigInteger(tJsonPrivateData.getString("BIAYA_ADMIN61").replaceAll("[^\\d]", ""));
+                BigInteger admin = new BigInteger("0");
+                if (!tResponseInquiryPayment.hasDataElement(57) || tResponseInquiryPayment.getValueForDataElement(57).isEmpty()) {
+                    admin = new BigInteger("0");
+                } else {
+                    admin = new BigInteger(tResponseInquiryPayment.getValueForDataElement(57));
+                }
+
+//                if (admin.toString().equals("0")) {
+//                    admin = new BigInteger(tJsonPrivateData.getString("BIAYA_ADMIN61").replaceAll("[^\\d]", ""));
+//                }
+
                 BigInteger biayaAir = new BigInteger(tJsonPrivateData.getString("BIAYA_AIR"));
                 BigInteger biayaMeter = new BigInteger(tJsonPrivateData.getString("BIAYA_METER"));
                 BigInteger biayaAngsuran = new BigInteger(tJsonPrivateData.getString("BIAYA_ANGSURAN"));
@@ -242,11 +253,16 @@ public abstract class BjbPdamMessageHandler extends BJBJsonHandler {
         String tRoutingToBiler = tMP.getString("BILLER");
         tPaymentRequestMessage.setValueForDataElement(60, tRoutingToBiler);
 
-        String tRoutingToBilerID = tMP.getString("BILLID");
-        tPaymentRequestMessage.setValueForDataElement(61, rightSpacePadding(tRoutingToBilerID.trim(), 18));
+        if (pProcessingCode.equals(cProcCodeInquiry)) {
+            String tRoutingToBilerID = tMP.getString("BILLID");
+            tPaymentRequestMessage.setValueForDataElement(61, rightSpacePadding(tRoutingToBilerID.trim(), 18));
+        }
 
         if (pProcessingCode.equals(cProcCodePayment)) {
+            String tBit61 = tMP.getString("BIT61");
             String tBit62 = tMP.getString("BIT62");
+
+            tPaymentRequestMessage.setValueForDataElement(61, tBit61);
             tPaymentRequestMessage.setValueForDataElement(62, tBit62);
         }
 
